@@ -1,3 +1,5 @@
+val kotlin_version: String by project
+
 plugins {
     kotlin("jvm") version "1.9.22"
 }
@@ -11,6 +13,7 @@ repositories {
 
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
+    implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     testImplementation(kotlin("test"))
 }
 
