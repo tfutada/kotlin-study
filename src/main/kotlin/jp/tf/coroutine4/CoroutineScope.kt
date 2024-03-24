@@ -3,12 +3,11 @@ package jp.tf.jp.tf.coroutine4
 import kotlinx.coroutines.*
 
 fun main() = runBlocking {
-    val scope = CoroutineScope(Dispatchers.Default)
 
-    val job = scope.launch {
+    val job = launch(Dispatchers.Default) {
         println("Parent : I'm working in thread ${Thread.currentThread().name}")
 
-        launch {
+        launch(Dispatchers.Default) {
             println("Child : I'm working in thread ${Thread.currentThread().name}")
             delay(500)
             println("Child : I'm working in thread ${Thread.currentThread().name}")
@@ -20,7 +19,7 @@ fun main() = runBlocking {
 
 
 //    scope.cancel()
-    job.cancel()
+//    job.cancel()
     delay(1100L)
     println("Done")
 }
