@@ -15,11 +15,23 @@ val output: String.() -> String = {
 // to upper case
 val output2: String.() -> String = { uppercase(Locale.getDefault()) }
 
+fun StringBuilder.protected(block: StringBuilder.() -> Unit) {
+    append("Protected: ")
+    block()
+}
+
 fun main() {
     val str = "world"
     str.dump()
 
     println(str.output())
     println(str.output2())
+
+    val str2 = StringBuilder()
+    str2.protected {
+        append("Hello")
+        println(this.toString())
+    }
 }
+
 
