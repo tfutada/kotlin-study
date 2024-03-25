@@ -3,10 +3,12 @@ package jp.tf.jp.tf.sha256stream
 import java.io.File
 import java.io.FileInputStream
 import java.security.MessageDigest
+import kotlin.system.measureTimeMillis
 
 fun hashFile(filePath: String, algorithm: String = "SHA-256"): String {
     val buffer = ByteArray(1024) // Buffer size of 1KB
     val messageDigest = MessageDigest.getInstance(algorithm)
+
 
     FileInputStream(File(filePath)).use { fis ->
         var bytesRead: Int
@@ -21,6 +23,11 @@ fun hashFile(filePath: String, algorithm: String = "SHA-256"): String {
 
 fun main() {
     val filePath = "largefile.dat"
-    val hashed = hashFile(filePath)
-    println("SHA-256 Hash: $hashed")
+
+    val millis = measureTimeMillis {
+        val hashed = hashFile(filePath)
+        println("SHA-256 Hash: $hashed")
+    }
+
+    println("Hashing took $millis ms")
 }
