@@ -5,6 +5,10 @@ fun main() {
     var counter = 3
 
     sendMoneyWithLog {
+        counter++
+    }
+
+    sendMoneyWithLog {
         counter
     }
 }

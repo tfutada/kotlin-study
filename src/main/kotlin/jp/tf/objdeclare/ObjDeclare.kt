@@ -10,6 +10,6 @@ object ObjDeclare {
 
 fun main() {
     val c = ObjDeclare.increment()
-    println(ObjDeclare.count)
+    println(ObjDeclare.count) // 1
 }
 
