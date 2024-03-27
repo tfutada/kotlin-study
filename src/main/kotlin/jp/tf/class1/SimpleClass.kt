@@ -1,4 +1,4 @@
-package jp.tf.`class`
+package jp.tf.class1
 
 class SimpleClass(val a: String, var b: Int = 0) {
     // a method
@@ -19,8 +19,9 @@ fun String.dump() {
 fun main() {
     val obj = SimpleClass("hello")
     println(obj.toStr())  // a: hello, b: 0
-    obj.dump()
+    obj.dump() // Classの拡張関数
 
+    // Stringの拡張関数
     val str = "world"
     str.dump()
     "hello".dump() // "String: hello

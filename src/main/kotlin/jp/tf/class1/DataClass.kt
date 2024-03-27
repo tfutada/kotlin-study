@@ -1,4 +1,4 @@
-package jp.tf.`class`
+package jp.tf.class1
 
 data class UserData(val name: String, val age: Int)
 

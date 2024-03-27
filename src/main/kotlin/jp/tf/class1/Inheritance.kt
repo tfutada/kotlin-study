@@ -1,4 +1,4 @@
-package jp.tf.`class`
+package jp.tf.class1
 
 sealed class Base(var p: Int) {
     open fun dump(): String {

@@ -1,4 +1,4 @@
-package jp.tf.`class`
+package jp.tf.class1
 
 class InitOrderDemo(name: String) {
     var firstProperty = "First property: $name".also(::println)

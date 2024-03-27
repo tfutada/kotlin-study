@@ -1,4 +1,4 @@
-package jp.tf.`class`
+package jp.tf.class1
 
 class UserProfile {
     var name: String = "Unknown"
