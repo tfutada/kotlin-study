@@ -5,7 +5,10 @@ import aws.sdk.kotlin.services.s3.S3Client
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
 import aws.smithy.kotlin.runtime.content.asByteStream
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.time.withTimeout
+import kotlinx.coroutines.withTimeout
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
 
 fun main() = runBlocking {
     putObjects("futa-taka-bucket-1", "access-log-20241231.log")
@@ -15,7 +18,12 @@ fun main() = runBlocking {
 suspend fun withS3Client(block: suspend S3Client.() -> Unit) {
     S3Client {
         region = "us-east-1"
-        credentialsProvider = ProfileCredentialsProvider("mfa")
+        credentialsProvider = ProfileCredentialsProvider("default")
+        httpClient {
+            connectTimeout = 10.seconds
+
+            maxConcurrency = 5u
+        }
     }.use { s3Client ->
         block(s3Client)
     }

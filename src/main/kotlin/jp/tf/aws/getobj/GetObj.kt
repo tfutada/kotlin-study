@@ -16,7 +16,7 @@ fun main() = runBlocking {
 suspend fun withS3Client(block: suspend S3Client.() -> Unit) {
     S3Client {
         region = "us-east-1"
-        credentialsProvider = ProfileCredentialsProvider("mfa")
+        credentialsProvider = ProfileCredentialsProvider("default")
     }.use { s3Client ->
         block(s3Client)
     }

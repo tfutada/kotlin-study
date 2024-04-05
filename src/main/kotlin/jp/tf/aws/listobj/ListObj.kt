@@ -15,7 +15,7 @@ suspend fun listBucketObjects(bucketName: String) {
     }
 
     S3Client { region = "us-east-1"
-        credentialsProvider = ProfileCredentialsProvider("mfa")
+        credentialsProvider = ProfileCredentialsProvider("default")
     }.use { s3 ->
 
         val response = s3.listObjects(request)
