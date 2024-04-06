@@ -2,6 +2,7 @@ val kotlin_version: String by project
 
 plugins {
     kotlin("jvm") version "1.9.22"
+    id("io.ktor.plugin") version "2.3.9"
 }
 
 group = "jp.tf"
@@ -26,4 +27,8 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(17)
+}
+
+application {
+    mainClass.set("jp.tf.hello.HelloKt")
 }
