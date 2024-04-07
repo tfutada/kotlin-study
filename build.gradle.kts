@@ -1,4 +1,5 @@
 val kotlin_version: String by project
+val ktor_version: String by project
 
 plugins {
     kotlin("jvm") version "1.9.22"
@@ -18,6 +19,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation("aws.sdk.kotlin:s3:$kotlinSdkVersion")
+    implementation("io.ktor:ktor-network:$ktor_version")
 
     testImplementation(kotlin("test"))
 }
