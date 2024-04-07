@@ -22,7 +22,7 @@ fun main() {
                 delay(3000)
                 println("Received from ${packet.address}: $message")
                 // optional: echo the message back
-                serverSocket.send(Datagram(ByteReadPacket("Echo $message".encodeToByteArray()), packet.address))
+                serverSocket.send(Datagram(ByteReadPacket("Echo->[ $message".encodeToByteArray()), packet.address))
             }
         }
     }

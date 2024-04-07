@@ -13,7 +13,7 @@ fun main() {
         val data = "Hello, UDP Server!".toByteArray()
         DatagramSocket().use { clientSocket ->
             val packet = DatagramPacket(data, data.size, serverAddress, serverPort)
-            for (i in 1..10) {
+            for (i in 1..3) {
                 clientSocket.send(packet)
 //                Thread.sleep(1000)
             }
