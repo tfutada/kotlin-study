@@ -32,5 +32,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("jp.tf.hello.HelloKt")
+    mainClass.set("jp.tf.udp.server.UDPServerKt")
 }
