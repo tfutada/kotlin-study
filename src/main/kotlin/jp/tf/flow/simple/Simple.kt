@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.flow
 suspend fun main() = coroutineScope {
     // consumer
     simpleFlow().collect { value ->
+        delay(2000)
         println(value)
     }
 }
