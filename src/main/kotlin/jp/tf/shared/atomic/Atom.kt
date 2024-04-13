@@ -1,32 +1,20 @@
-package jp.tf.shared.parallel
+package jp.tf.shared.atomic
 
 import kotlinx.coroutines.*
-import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.system.measureTimeMillis
 
 fun log(msg: String) = println("[${Thread.currentThread().name}] $msg")
 
-var counter = 0
+val counter = AtomicInteger()
 
-// see the difference between the two runs: 1. multiple CPU cores vs. 2. a single CPU core.
-suspend fun main(): Unit = runBlocking {
-    // 1. run on multiple CPU cores
+suspend fun main() = runBlocking {
     withContext(Dispatchers.Default) {
         massiveRun {
-            counter++
+            counter.incrementAndGet()
         }
     }
-    println("Counter = $counter") // race condition may occur
-
-    // 2. run on a single CPU core.
-    counter = 0
-    val myDispatcher = Executors.newFixedThreadPool(1).asCoroutineDispatcher()
-    withContext(myDispatcher) {
-        massiveRun {
-            counter++
-        }
-    }
-    println("Counter = $counter") // race condition will NOT occur
+    println("Counter = $counter")
 }
 
 suspend fun massiveRun(action: suspend () -> Unit) {
