@@ -21,6 +21,14 @@ fun StringBuilder.protected(block: StringBuilder.() -> Unit) {
     append("]")
 }
 
+fun protected5(block: StringBuilder.() -> Unit): StringBuilder {
+    val str = StringBuilder()
+    str.append("[")
+    str.apply(block) // block(str)
+    str.append("]")
+    return str
+}
+
 fun main() {
     val str = "world"
     str.dump()
@@ -33,6 +41,11 @@ fun main() {
         append("Hello")
     }
     println(str2)
+
+    val str5 = protected5 {
+        append("Hello")
+    }
+    println(str5)
 }
 
 
