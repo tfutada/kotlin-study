@@ -9,7 +9,7 @@ import kotlinx.coroutines.*
 fun main() {
     val selectorManager = SelectorManager(Dispatchers.IO)
     val serverSocket = aSocket(selectorManager).udp().bind(InetSocketAddress("::", 5106))
-    println("Server is listening at ${serverSocket.localAddress}")
+    println("Kotlin UDP Server is listening at ${serverSocket.localAddress}")
 
     CoroutineScope(Dispatchers.IO).launch {
         while (true) {
@@ -19,7 +19,7 @@ fun main() {
             launch {
                 val message = packet.packet.readUTF8Line()
                 // async sleep
-//                delay(3000)
+                delay(3000)
                 println("Received from ${packet.address}: $message")
                 // optional: echo the message back
                 serverSocket.send(Datagram(ByteReadPacket("Echo->[ $message".encodeToByteArray()), packet.address))

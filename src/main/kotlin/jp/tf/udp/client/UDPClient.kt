@@ -10,7 +10,9 @@ fun main() {
         val serverAddress = InetAddress.getByName("::1")
         val serverPort = 5106
 
-        val data = "Hello, UDP Server!".toByteArray()
+        val largeString = "A".repeat(1024) // 1 KB
+        val data = largeString.toByteArray()
+
         DatagramSocket().use { clientSocket ->
             val packet = DatagramPacket(data, data.size, serverAddress, serverPort)
             for (i in 1..100) {
