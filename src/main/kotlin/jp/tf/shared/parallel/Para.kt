@@ -24,16 +24,17 @@ suspend fun massiveRun(action: suspend () -> Unit) {
 
 var counter = 0
 
+// see the difference between the two runs: 1. multiple CPU cores vs. 2. a single CPU core.
 suspend fun main(): Unit = runBlocking {
-
+    // 1. run on multiple CPU cores
     withContext(Dispatchers.Default) {
         massiveRun {
             counter++
         }
     }
-    println("Counter = $counter")
+    println("Counter = $counter") // race condition may occur
 
-    // run on a single CPU core.
+    // 2. run on a single CPU core.
     counter = 0
     val myDispatcher = Executors.newFixedThreadPool(1).asCoroutineDispatcher()
     withContext(myDispatcher) {
@@ -41,6 +42,6 @@ suspend fun main(): Unit = runBlocking {
             counter++
         }
     }
-    println("Counter = $counter")
+    println("Counter = $counter") // race condition will NOT occur
 }
 
