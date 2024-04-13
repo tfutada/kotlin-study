@@ -19,7 +19,7 @@ fun main() = runBlocking {
 
         launch(Dispatchers.IO) {  // Handle each packet in a separate coroutine
             val data = String(packet.data, 0, packet.length)
-            println("クライアントからのデータ: $data")
+            println(".")
 
             val responseData = "Received: $data".toByteArray()
             val responsePacket = DatagramPacket(

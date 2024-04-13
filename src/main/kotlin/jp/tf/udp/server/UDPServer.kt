@@ -19,7 +19,7 @@ fun main() {
             launch {
                 val message = packet.packet.readUTF8Line()
                 // async sleep
-                delay(3000)
+//                delay(3000)
                 println("Received from ${packet.address}: $message")
                 // optional: echo the message back
                 serverSocket.send(Datagram(ByteReadPacket("Echo->[ $message".encodeToByteArray()), packet.address))
