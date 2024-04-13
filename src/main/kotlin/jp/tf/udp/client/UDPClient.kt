@@ -11,11 +11,13 @@ fun main() {
         val serverPort = 5106
 
         val largeString = "A".repeat(1024) // 1 KB
-        val data = largeString.toByteArray()
+        var data = largeString.toByteArray()
+
+        data = "123".toByteArray()
 
         DatagramSocket().use { clientSocket ->
             val packet = DatagramPacket(data, data.size, serverAddress, serverPort)
-            for (i in 1..65) {
+            for (i in 1..1000) {
                 clientSocket.send(packet)
 //                Thread.sleep(1000)
             }
