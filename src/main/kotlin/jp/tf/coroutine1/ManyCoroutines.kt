@@ -5,7 +5,10 @@ import kotlinx.coroutines.*
 fun log(msg: String) = println("[${Thread.currentThread().name}] $msg")
 
 fun main() = runBlocking {
-    repeat(9) { // launch a lot of coroutines
+    val numCores = Runtime.getRuntime().availableProcessors()
+    println("Number of logical CPU cores: $numCores")
+
+    repeat(numCores + 1) { // launch a lot of coroutines
         launch(Dispatchers.Default) {
             delay(3000L)
 //            Thread.sleep(3000L)
