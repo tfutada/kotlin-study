@@ -15,7 +15,7 @@ fun main() {
 
         DatagramSocket().use { clientSocket ->
             val packet = DatagramPacket(data, data.size, serverAddress, serverPort)
-            for (i in 1..100) {
+            for (i in 1..65) {
                 clientSocket.send(packet)
 //                Thread.sleep(1000)
             }
