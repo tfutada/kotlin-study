@@ -16,8 +16,9 @@ val output: String.() -> String = {
 val output2: String.() -> String = { uppercase(Locale.getDefault()) }
 
 fun StringBuilder.protected(block: StringBuilder.() -> Unit) {
-    append("Protected: ")
+    append("[")
     block()
+    append("]")
 }
 
 fun main() {
@@ -30,8 +31,8 @@ fun main() {
     val str2 = StringBuilder()
     str2.protected {
         append("Hello")
-        println(this.toString())
     }
+    println(str2)
 }
 
 
