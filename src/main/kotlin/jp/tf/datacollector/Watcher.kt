@@ -12,7 +12,7 @@ class DirectoryWatcher(private val path: Path) {
     init {
         path.register(watcher, ENTRY_CREATE)
         // print the full path to watch
-        println("Watching: ${path.toAbsolutePath()}")
+        println("Watching directory at ${path.toAbsolutePath()}")
     }
 
     fun onCreate(action: Path.() -> Unit) {
