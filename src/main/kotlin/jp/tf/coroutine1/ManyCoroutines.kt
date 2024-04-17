@@ -18,5 +18,5 @@ fun main() = runBlocking {
 
     println("Press Enter to exit")
     readln()
-    println()
+    println("done")
 }

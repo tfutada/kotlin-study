@@ -20,7 +20,7 @@ fun main() {
             val packet = serverSocket.receive()  // This is a suspending function and will not block the thread.
 
             launch {
-                val message = packet.packet.readUTF8Line()
+                val message = packet.packet.readBytes().decodeToString()
                 // CPU intensive task
                 val ret = withContext(Dispatchers.IO) {
                     // write message to a file
