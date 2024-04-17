@@ -1,10 +1,9 @@
-package jp.tf.filewatch
+package jp.tf.datacollector
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import java.nio.file.*
 import java.nio.file.StandardWatchEventKinds.*
-import kotlin.io.path.name
 
 class DirectoryWatcher(private val path: Path) {
     private val watcher = path.fileSystem.newWatchService()

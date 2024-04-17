@@ -1,5 +1,6 @@
-package jp.tf.filewatch
+package jp.tf.datacollector
 
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.launch
 
@@ -15,7 +16,7 @@ fun main() = runBlocking {
     }
 
     println("Watching directory. Press enter to exit...")
-    launch {
+    launch(Dispatchers.IO) {
         directoryWatcher.watchDirectoryEvents()
     }
     readLine()  // Keep the program running until user input
