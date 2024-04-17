@@ -11,12 +11,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.file.Paths
-import kotlin.io.path.absolutePathString
 
 const val LogDir = "logs"  // Directory to store log files
 const val LogFileNamePrefix = "${LogDir}/netflow-packet"
-const val LogFileName = "$LogFileNamePrefix.log"
+const val LogFileName = "${LogFileNamePrefix}.log"
 const val S3BucketName = "futa-taka-bucket-1"
+const val MaxLogFileSize = 10_000  // Max file size in bytes for log rotation
 
 fun main() {
     //
@@ -30,17 +30,18 @@ fun main() {
         val fileName = this.toString()
         println("New file created: $fileName")
 
-        val metadataVal = mutableMapOf<String, String>()
-        metadataVal["fileType"] = "binary"
-
-        val request = PutObjectRequest {
-            bucket = S3BucketName
-            key = fileName
-            metadata = metadataVal
-            body = File("${LogDir}/${fileName}").asByteStream()
-        }
-
+        // Upload the file to S3
         CoroutineScope(Dispatchers.IO).launch {
+            val metadataVal = mutableMapOf<String, String>()
+            metadataVal["fileType"] = "binary"
+
+            val request = PutObjectRequest {
+                bucket = S3BucketName
+                key = fileName
+                metadata = metadataVal
+                body = File("${LogDir}/${fileName}").asByteStream()
+            }
+
             awsS3Client {
                 val response = putObject(request)
                 println("Tag information is ${response.eTag}")
@@ -63,7 +64,6 @@ fun main() {
     val serverSocket = aSocket(selectorManager).udp().bind(InetSocketAddress("::", 5106))
     println("Server is listening at ${serverSocket.localAddress}")
 
-    val maxFileSize = 10_000  // Max file size in bytes
     var logFile = File(LogFileName)
 
     CoroutineScope(Dispatchers.IO).launch {
@@ -76,7 +76,7 @@ fun main() {
 
                 // Log rotation check and execution
                 withContext(Dispatchers.IO) {
-                    if (logFile.length() > maxFileSize) {
+                    if (logFile.length() > MaxLogFileSize) {
                         val newFileName = "${LogFileNamePrefix}.${System.currentTimeMillis()}.log"
                         logFile.renameTo(File(newFileName))
                         logFile = File(LogFileName)  // reset log file
@@ -89,7 +89,7 @@ fun main() {
 //                println("Received from ${packet.address}: $udpPacket")
                 println("Received from ${packet.address}")
                 // optional: echo the message back
-                serverSocket.send(Datagram(ByteReadPacket("Echo->[ $udpPacket".encodeToByteArray()), packet.address))
+//                serverSocket.send(Datagram(ByteReadPacket("Echo->[ $udpPacket".encodeToByteArray()), packet.address))
             }
         }
     }
