@@ -45,6 +45,9 @@ fun main() {
                 val response = putObject(request)
                 println("Tag information is ${response.eTag}")
             }
+
+            // TODO call Corda API to store the file hash and metadata
+            // client.post
         }
     }
 
