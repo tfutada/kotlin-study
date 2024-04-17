@@ -1,30 +1,54 @@
-package jp.tf.jp.tf.datacollector
+package jp.tf.datacollector
 
+import aws.sdk.kotlin.services.s3.model.PutObjectRequest
+import aws.smithy.kotlin.runtime.content.asByteStream
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.core.*
-import jp.tf.datacollector.DirectoryWatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.nio.file.Paths
+import kotlin.io.path.absolutePathString
 
-const val LogFileNamePrefix = "logs/netflow-packet"
+const val LogDir = "logs"  // Directory to store log files
+const val LogFileNamePrefix = "${LogDir}/netflow-packet"
 const val LogFileName = "$LogFileNamePrefix.log"
+const val S3BucketName = "futa-taka-bucket-1"
 
 fun main() {
     //
     // Directory Watcher
     //
-    val path = Paths.get("logs")
+    val path = Paths.get(LogDir)
     val directoryWatcher = DirectoryWatcher(path)
 
+    // Lambda Receiver - define an action when a new log file is created
     directoryWatcher.onCreate {
-        println("New file added: $this")
+        val fileName = this.toString()
+        println("New file created: $fileName")
+
+        val metadataVal = mutableMapOf<String, String>()
+        metadataVal["fileType"] = "binary"
+
+        val request = PutObjectRequest {
+            bucket = S3BucketName
+            key = fileName
+            metadata = metadataVal
+            body = File("${LogDir}/${fileName}").asByteStream()
+        }
+
+        CoroutineScope(Dispatchers.IO).launch {
+            awsS3Client {
+                val response = putObject(request)
+                println("Tag information is ${response.eTag}")
+            }
+        }
     }
 
+    // Start watching the log directory
     CoroutineScope(Dispatchers.IO).launch {
         directoryWatcher.watchDirectoryEvents()
     }
@@ -36,7 +60,7 @@ fun main() {
     val serverSocket = aSocket(selectorManager).udp().bind(InetSocketAddress("::", 5106))
     println("Server is listening at ${serverSocket.localAddress}")
 
-    val maxFileSize = 100_000  // Max file size in bytes
+    val maxFileSize = 10_000  // Max file size in bytes
     var logFile = File(LogFileName)
 
     CoroutineScope(Dispatchers.IO).launch {
