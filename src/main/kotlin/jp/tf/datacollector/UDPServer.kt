@@ -24,6 +24,8 @@ const val HttpServer = "http://localhost:8080"
 @Serializable
 data class Post(val title: String, val body: String, val userId: Int)
 
+val counterContext = newSingleThreadContext("CounterContext")
+
 fun main() = runBlocking<Unit> {
     //
     // Directory Watcher
@@ -96,7 +98,7 @@ fun main() = runBlocking<Unit> {
                 val udpPacket = packet.packet.readBytes().decodeToString()
 
                 // Log rotation check and execution
-                withContext(Dispatchers.IO) {
+                val ret = withContext(counterContext) {
                     if (logFile.length() > MaxLogFileSize) {
                         val newFileName = "${LogFileNamePrefix}.${System.currentTimeMillis()}.log"
                         logFile.renameTo(File(newFileName))
