@@ -4,6 +4,7 @@ val ktor_version: String by project
 plugins {
     kotlin("jvm") version "1.9.22"
     id("io.ktor.plugin") version "2.3.9"
+    kotlin("plugin.serialization") version "1.9.22"
 }
 
 group = "jp.tf"
@@ -20,6 +21,10 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation("aws.sdk.kotlin:s3:$kotlinSdkVersion")
     implementation("io.ktor:ktor-network:$ktor_version")
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
 
     testImplementation(kotlin("test"))
 }
