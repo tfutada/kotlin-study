@@ -5,10 +5,7 @@ import aws.smithy.kotlin.runtime.content.asByteStream
 import io.ktor.network.selector.*
 import io.ktor.network.sockets.*
 import io.ktor.utils.io.core.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.io.File
 import java.nio.file.Paths
 
@@ -18,7 +15,7 @@ const val LogFileName = "${LogFileNamePrefix}.log"
 const val S3BucketName = "futa-taka-bucket-1"
 const val MaxLogFileSize = 10_000  // Max file size in bytes for log rotation
 
-fun main() {
+fun main() = runBlocking<Unit> {
     //
     // Directory Watcher
     //
@@ -66,7 +63,7 @@ fun main() {
 
     var logFile = File(LogFileName)
 
-    CoroutineScope(Dispatchers.IO).launch {
+    val job = CoroutineScope(Dispatchers.IO).launch {
         while (true) {
             val packet = serverSocket.receive()
 
@@ -94,6 +91,5 @@ fun main() {
         }
     }
 
-    println("Press Enter to exit")
-    readln()  // Keep the main thread alive until an Enter is pressed.
+    job.join()  // Wait for the job to finish to avoid closing the serverSocket too early
 }
