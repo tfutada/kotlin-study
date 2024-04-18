@@ -53,7 +53,7 @@ fun main() = runBlocking<Unit> {
             }
 
             postClient {
-                val response: HttpResponse = post("https://jsonplaceholder.typicode.com/posts") {
+                val response: HttpResponse = post("http://localhost:8080/upload") {
                     headers {
                         append(HttpHeaders.Authorization, "abc123")
                         append(HttpHeaders.UserAgent, "ktor client")
