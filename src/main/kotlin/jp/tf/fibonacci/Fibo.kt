@@ -15,11 +15,11 @@ fun main() = runBlocking {
             // compute a fibonacci number
             val n = 46
             val fib = fibonacciRecursive(n)
-            println("Fibonacci($n) = $fib")
+            println("thread $it Fibonacci($n) = $fib")
         }
     }
 
-    delay(10_000L) // Wait for all coroutines to finish
+    delay(100_000L) // Wait for all coroutines to finish
 }
 
 fun fibonacciRecursive(n: Int): Int {
