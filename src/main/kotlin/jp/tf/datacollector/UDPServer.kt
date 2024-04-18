@@ -19,6 +19,7 @@ const val LogFileNamePrefix = "${LogDir}/netflow-packet"
 const val LogFileName = "${LogFileNamePrefix}.log"
 const val S3BucketName = "futa-taka-bucket-1"
 const val MaxLogFileSize = 10_000  // Max file size in bytes for log rotation
+const val HttpServer = "http://localhost:8080"
 
 @Serializable
 data class Post(val title: String, val body: String, val userId: Int)
@@ -53,7 +54,7 @@ fun main() = runBlocking<Unit> {
             }
 
             postClient {
-                val response: HttpResponse = post("http://localhost:8080/upload") {
+                val response: HttpResponse = post("${HttpServer}/upload") {
                     headers {
                         append(HttpHeaders.Authorization, "abc123")
                         append(HttpHeaders.UserAgent, "ktor client")
