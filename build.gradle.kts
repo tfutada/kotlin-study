@@ -19,7 +19,7 @@ val kotlinSdkVersion = "1.0.41"
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
     implementation("org.apache.kafka:kafka-clients:3.6.2")
-
+    implementation("org.postgresql:postgresql:42.7.3")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect:$kotlin_version")
     implementation("aws.sdk.kotlin:s3:$kotlinSdkVersion")
