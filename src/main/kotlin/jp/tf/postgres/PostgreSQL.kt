@@ -66,7 +66,8 @@ class PostgresClient(private val url: String, private val user: String, private 
 }
 
 fun main() {
-    val client = PostgresClient(postgresServer, postgresUser, postgresPassword)
+    val url = "jdbc:postgresql://${postgresServer}/postgres?currentSchema=testschema1"
+    val client = PostgresClient(url, postgresUser, postgresPassword)
     client.connect()
     // Example query
     val users = client.executeQuery("SELECT * FROM user1")
