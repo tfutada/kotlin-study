@@ -7,9 +7,11 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.serialization.StringSerializer
 import java.util.*
 
+val bootstrapServers = System.getenv("KAFKA_BOOTSTRAP_SERVERS") ?: "localhost:29092"
+
 fun createProducer(): KafkaProducer<String, String> {
     val props = Properties().apply {
-        put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:29092")
+        put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
         put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
         put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java.name)
         // Additional producer-specific configurations
