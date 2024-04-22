@@ -8,10 +8,11 @@ import kotlin.time.Duration.Companion.seconds
 suspend fun awsS3Client(block: suspend S3Client.() -> Unit) {
     S3Client {
         region = "us-east-1"
-        credentialsProvider = ProfileCredentialsProvider("default")
+        // activate if you want to run this program locally on your mac/win
+        // when running on an EC2 instance, make use of Policy attached to EC2 instead of .aws credential.
+//        credentialsProvider = ProfileCredentialsProvider("default")
         httpClient {
             connectTimeout = 10.seconds
-
             maxConcurrency = 5u
         }
     }.use { s3Client ->

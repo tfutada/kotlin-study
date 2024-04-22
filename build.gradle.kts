@@ -40,5 +40,5 @@ kotlin {
 }
 
 application {
-    mainClass.set("jp.tf.udp.server.UDPServerKt")
+    mainClass.set("jp.tf.datacollector.UDPServerKt")
 }
