@@ -27,6 +27,14 @@ suspend fun main(): Unit = runBlocking {
         }
     }
     log("Counter(single) = $counter") // race condition will NOT occur
+
+    // 3. run on the main thread
+    counter = 0
+    massiveRun {
+        counter++
+    }
+    log("Counter(main) = $counter") // race condition will NOT occur
+
 }
 
 suspend fun massiveRun(action: suspend () -> Unit) {
