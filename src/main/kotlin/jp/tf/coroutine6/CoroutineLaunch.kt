@@ -13,6 +13,7 @@ fun main() = runBlocking<Unit> {
 }
 
 suspend fun failedConcurrentWork() = coroutineScope {
+    // 1つ目の子コルーチン
     val jobOne = launch {
         try {
             delay(Long.MAX_VALUE) // Emulates very long computation
@@ -21,6 +22,7 @@ suspend fun failedConcurrentWork() = coroutineScope {
         }
     }
 
+    // 2つ目の子コルーチン。わざと例外をスローする。１つ目の子コルーチンがキャンセルされる。
     val jobTwo = launch {
         log("Second child throws an exception")
         throw ArithmeticException()
