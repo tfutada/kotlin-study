@@ -13,7 +13,7 @@ fun main() = runBlocking {
         launch(Dispatchers.Default) { // This is where the magic happens
             println("start...")
             // compute a fibonacci number
-            val n = 46
+            val n = 47L
             val fib = fibonacciRecursive(n)
             println("thread $it Fibonacci($n) = $fib")
         }
@@ -22,7 +22,7 @@ fun main() = runBlocking {
     delay(100_000L) // Wait for all coroutines to finish
 }
 
-fun fibonacciRecursive(n: Int): Int {
+fun fibonacciRecursive(n: Long): Long {
     return if (n <= 1) n
     else fibonacciRecursive(n - 1) + fibonacciRecursive(n - 2)
 }
