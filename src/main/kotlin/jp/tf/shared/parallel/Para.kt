@@ -16,7 +16,7 @@ suspend fun main(): Unit = runBlocking {
             counter++
         }
     }
-    println("Counter = $counter") // race condition may occur
+    log("Counter = $counter") // race condition may occur
 
     // 2. run on a single CPU core.
     counter = 0
@@ -26,7 +26,7 @@ suspend fun main(): Unit = runBlocking {
             counter++
         }
     }
-    println("Counter = $counter") // race condition will NOT occur
+    log("Counter(single) = $counter") // race condition will NOT occur
 }
 
 suspend fun massiveRun(action: suspend () -> Unit) {
@@ -42,5 +42,5 @@ suspend fun massiveRun(action: suspend () -> Unit) {
             }
         }
     }
-    println("Completed ${n * k} actions in $time ms")
+    log("Completed ${n * k} actions in $time ms")
 }
