@@ -1,4 +1,4 @@
-package jp.tf.jp.tf.generics.gen1
+package jp.tf.generics.gen1
 
 import java.util.*
 
@@ -7,7 +7,7 @@ fun <T> echo(a: T): T {
 }
 
 fun main() {
-    val ret = jp.tf.jp.tf.generics.gen2.echo(10)
+    val ret = echo(10)
     println(ret.minus(2))
 
     val ret2 = echo("Hello, Generics!")
