@@ -1,6 +1,9 @@
 package jp.tf.datacollector
 
 import aws.sdk.kotlin.services.s3.model.PutObjectRequest
+import aws.sdk.kotlin.services.s3.model.PutObjectTaggingRequest
+import aws.sdk.kotlin.services.s3.model.Tag
+import aws.sdk.kotlin.services.s3.model.Tagging
 import aws.smithy.kotlin.runtime.content.asByteStream
 import io.ktor.client.request.*
 import io.ktor.client.request.headers
@@ -13,6 +16,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import java.io.File
 import java.nio.file.Paths
+
 
 const val LogDir = "logs"  // Directory to store log files
 const val LogFileNamePrefix = "${LogDir}/netflow-packet"
@@ -56,20 +60,20 @@ fun main() = runBlocking<Unit> {
         // Upload the file to S3 and Http Post
         CoroutineScope(Dispatchers.IO).launch {
             val metadataVal = mutableMapOf<String, String>()
-            metadataVal["fileType"] = "binary"
-
-            val request = PutObjectRequest {
-                bucket = s3BucketName
-                key = fileName
-                metadata = metadataVal
-                body = File("${LogDir}/${fileName}").asByteStream()
-            }
+            metadataVal["clientId"] = fileName
 
             awsS3Client {
+                val request = PutObjectRequest {
+                    bucket = s3BucketName
+                    key = fileName
+                    metadata = metadataVal
+                    body = File("${LogDir}/${fileName}").asByteStream()
+                }
                 val response = putObject(request)
                 println("Tag information is ${response.eTag}")
             }
 
+            // TODO extract status form response
             postClient {
                 val response: HttpResponse = post("${HttpServer}/api/v1/flow/86F3F0502295") {
                     headers {
@@ -90,7 +94,36 @@ fun main() = runBlocking<Unit> {
                 } else {
                     println("Failed with status code: ${response.status.value}")
                 }
+            }
 
+            // TODO set tx_start and status correctly
+            awsS3Client {
+                val t = Tagging {
+                    tagSet = listOf(
+                        Tag {
+                            key = "clientId"
+                            value = fileName
+                        },
+                        Tag {
+                            key = "tx_start"
+                            value = "2024-05-28"
+                        },
+                        Tag {
+                            key = "status"
+                            value = "COMPLETE"
+                        }
+                    )
+                }
+
+                println("update tag: $t")
+
+                val putObjectTaggingRequest = PutObjectTaggingRequest {
+                    bucket = s3BucketName
+                    key = fileName
+                    tagging = t
+                }
+
+                putObjectTagging(putObjectTaggingRequest)
             }
         }
     }
