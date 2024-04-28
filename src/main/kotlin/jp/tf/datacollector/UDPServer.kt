@@ -17,12 +17,27 @@ import java.nio.file.Paths
 const val LogDir = "logs"  // Directory to store log files
 const val LogFileNamePrefix = "${LogDir}/netflow-packet"
 const val LogFileName = "${LogFileNamePrefix}.log"
-const val S3BucketName = "futa-taka-bucket-1"
 const val MaxLogFileSize = 10_000  // Max file size in bytes for log rotation
-const val HttpServer = "http://localhost:8080"
+
+const val HttpServer = "https://localhost:8888"
+
+val auth = System.getenv("CORDA_AUTH")!!
+val s3BucketName = System.getenv("S3_BUCKET")!!
+
 
 @Serializable
-data class Post(val title: String, val body: String, val userId: Int)
+data class ChatRequest(
+    val clientRequestId: String,
+    val flowClassName: String,
+    val requestBody: ChatDetails
+)
+
+@Serializable
+data class ChatDetails(
+    val chatName: String,
+    val otherMember: String,
+    val message: String
+)
 
 val counterContext = newSingleThreadContext("CounterContext")
 
@@ -44,7 +59,7 @@ fun main() = runBlocking<Unit> {
             metadataVal["fileType"] = "binary"
 
             val request = PutObjectRequest {
-                bucket = S3BucketName
+                bucket = s3BucketName
                 key = fileName
                 metadata = metadataVal
                 body = File("${LogDir}/${fileName}").asByteStream()
@@ -56,13 +71,18 @@ fun main() = runBlocking<Unit> {
             }
 
             postClient {
-                val response: HttpResponse = post("${HttpServer}/upload") {
+                val response: HttpResponse = post("${HttpServer}/api/v1/flow/86F3F0502295") {
                     headers {
-                        append(HttpHeaders.Authorization, "abc123")
-                        append(HttpHeaders.UserAgent, "ktor client")
+                        append(HttpHeaders.Authorization, "Basic $auth")
                     }
                     contentType(ContentType.Application.Json)
-                    setBody(Post("foo", "bar", 1))
+                    setBody(
+                        ChatRequest(
+                            fileName,
+                            "com.r3.developers.cordapptemplate.utxoexample.workflows.CreateNewChatFlow",
+                            ChatDetails("Chat with Bob", "CN=Bob, OU=Test Dept, O=R3, L=London, C=GB", "Hello Bob")
+                        )
+                    )
                 }
 
                 if (response.status.value in 200..299) {
@@ -106,6 +126,7 @@ fun main() = runBlocking<Unit> {
                     }
 
                     // Write message to the log file
+                    // TODO: is this a buffere write like 4096 bytes at a time?
                     logFile.appendText("$udpPacket\n")
                 }
 

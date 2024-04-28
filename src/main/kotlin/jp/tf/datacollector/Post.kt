@@ -6,6 +6,7 @@ import io.ktor.client.plugins.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
 
+// singleton pattern for HttpClient
 suspend fun postClient(block: suspend HttpClient.() -> Unit) {
     HttpClient(CIO) {
         install(ContentNegotiation) {
