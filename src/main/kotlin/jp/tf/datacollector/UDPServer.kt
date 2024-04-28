@@ -24,6 +24,7 @@ const val LogFileName = "${LogFileNamePrefix}.log"
 const val MaxLogFileSize = 10_000  // Max file size in bytes for log rotation
 
 const val HttpServer = "https://localhost:8888"
+const val HoldingIdentityShortHash = "86F3F0502295"
 
 val auth = System.getenv("CORDA_AUTH")!!
 val s3BucketName = System.getenv("S3_BUCKET")!!
@@ -75,16 +76,22 @@ fun main() = runBlocking<Unit> {
 
             // TODO extract status form response
             postClient {
-                val response: HttpResponse = post("${HttpServer}/api/v1/flow/86F3F0502295") {
+                val clientId = fileName
+                println("Post to Corda: $clientId")
+                val response: HttpResponse = post("${HttpServer}/api/v1/flow/${HoldingIdentityShortHash}") {
                     headers {
                         append(HttpHeaders.Authorization, "Basic $auth")
                     }
                     contentType(ContentType.Application.Json)
                     setBody(
                         ChatRequest(
-                            fileName,
+                            clientId,
                             "com.r3.developers.cordapptemplate.utxoexample.workflows.CreateNewChatFlow",
-                            ChatDetails("Chat with Bob", "CN=Bob, OU=Test Dept, O=R3, L=London, C=GB", "Hello Bob")
+                            ChatDetails(
+                                "Chat with Bob",
+                                "CN=Bob, OU=Test Dept, O=R3, L=London, C=GB",
+                                "Hello Bob"
+                            )
                         )
                     )
                 }
