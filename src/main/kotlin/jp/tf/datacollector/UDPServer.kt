@@ -121,26 +121,27 @@ fun main() = runBlocking<Unit> {
             // should i simply serialize resp and store it as a string?
             // what if value is null? should i store it as "null"? will aws s3 tag accept null???
             awsS3Client {
-                val t = Tagging {
-                    tagSet = listOf(
-                        Tag {
-                            key = "clientId"
-                            value = fileName
-                        },
-                        Tag {
-                            key = "flowId"
-                            value = resp?.flowId
-                        },
-                        Tag {
-                            key = "txStartTime"
-                            value = resp?.timestamp
-                        },
-                        Tag {
-                            key = "status"
-                            value = resp?.flowStatus ?: "failed"
-                        }
-                    )
-                }
+                val t =
+                    Tagging {
+                        tagSet = listOf(
+                            Tag {
+                                key = "clientId"
+                                value = fileName
+                            },
+                            Tag {
+                                key = "flowId"
+                                value = resp?.flowId ?: "null"
+                            },
+                            Tag {
+                                key = "txStartTime"
+                                value = resp?.timestamp ?: "null"
+                            },
+                            Tag {
+                                key = "status"
+                                value = resp?.flowStatus ?: "failed"
+                            }
+                        )
+                    }
 
                 println("updating a S3 tag: $t")
 
@@ -155,14 +156,14 @@ fun main() = runBlocking<Unit> {
         }
     }
 
-    // Start watching the log directory
+// Start watching the log directory
     CoroutineScope(Dispatchers.IO).launch {
         directoryWatcher.watchDirectoryEvents()
     }
 
-    //
-    // UDP Server
-    //
+//
+// UDP Server
+//
     val selectorManager = SelectorManager(Dispatchers.IO)
     val serverSocket = aSocket(selectorManager).udp().bind(InetSocketAddress("::", 5106))
     println("Server is listening at ${serverSocket.localAddress}")

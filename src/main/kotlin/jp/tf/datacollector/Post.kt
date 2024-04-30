@@ -13,9 +13,9 @@ import javax.net.ssl.X509TrustManager
 data class ApiResponse(
     val holdingIdentityShortHash: String,
     val clientRequestId: String,
-    val flowId: String,
+    val flowId: String?,
     val flowStatus: String,
-    val flowResult: String,
+    val flowResult: String?,
     val flowError: String?,
     val timestamp: String
 )
