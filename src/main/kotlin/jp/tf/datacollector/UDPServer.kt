@@ -1,9 +1,6 @@
 package jp.tf.datacollector
 
-import aws.sdk.kotlin.services.s3.model.PutObjectRequest
-import aws.sdk.kotlin.services.s3.model.PutObjectTaggingRequest
-import aws.sdk.kotlin.services.s3.model.Tag
-import aws.sdk.kotlin.services.s3.model.Tagging
+import aws.sdk.kotlin.services.s3.model.*
 import aws.smithy.kotlin.runtime.content.asByteStream
 import io.ktor.client.request.*
 import io.ktor.client.request.headers
@@ -16,6 +13,7 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import java.io.File
 import java.nio.file.Paths
+import java.util.*
 
 
 const val LogDir = "logs"  // Directory to store log files
@@ -27,8 +25,12 @@ const val HttpServer = "https://localhost:8888"
 const val HoldingIdentityShortHash = "86F3F0502295"
 
 val auth = System.getenv("CORDA_AUTH")!!
-val s3BucketName = System.getenv("S3_BUCKET")!!
 
+val s3BucketName: String by lazy {
+    val bucketName = System.getenv("S3_BUCKET") ?: throw IllegalStateException("S3_BUCKET environment variable not set")
+    val uuid = UUID.randomUUID().toString()
+    "$bucketName-$uuid"
+}
 
 @Serializable
 data class ChatRequest(
@@ -47,6 +49,15 @@ data class ChatDetails(
 val counterContext = newSingleThreadContext("CounterContext")
 
 fun main() = runBlocking<Unit> {
+    // create a S3 bucket
+    awsS3Client {
+        val request = CreateBucketRequest {
+            bucket = s3BucketName
+        }
+        createBucket(request)
+        println("S3 Bucket created: $s3BucketName")
+    }
+
     //
     // Directory Watcher
     //
