@@ -22,9 +22,10 @@ const val LogFileName = "${LogFileNamePrefix}.log"
 const val MaxLogFileSize = 10_000  // Max file size in bytes for log rotation
 
 const val HttpServer = "https://localhost:8888"
-const val HoldingIdentityShortHash = "86F3F0502295"
 
-val auth = System.getenv("CORDA_AUTH")!!
+val auth = System.getenv("AUTH")!!
+val hashId = System.getenv("HASH_ID")!!
+val flowName = System.getenv("FLOW_NAME")!!
 
 val s3BucketName: String by lazy {
     val bucketName = System.getenv("S3_BUCKET") ?: throw IllegalStateException("S3_BUCKET environment variable not set")
@@ -88,8 +89,8 @@ fun main() = runBlocking<Unit> {
             // TODO extract status form response
             postClient {
                 val clientId = fileName
-                println("Post to Corda: $clientId")
-                val response: HttpResponse = post("${HttpServer}/api/v1/flow/${HoldingIdentityShortHash}") {
+                println("Post: $clientId")
+                val response: HttpResponse = post("${HttpServer}/api/v1/flow/${hashId}") {
                     headers {
                         append(HttpHeaders.Authorization, "Basic $auth")
                     }
@@ -97,11 +98,11 @@ fun main() = runBlocking<Unit> {
                     setBody(
                         ChatRequest(
                             clientId,
-                            "com.r3.developers.cordapptemplate.utxoexample.workflows.CreateNewChatFlow",
+                            flowName,
                             ChatDetails(
-                                "Chat with Bob",
+                                "Chat test",
                                 "CN=Bob, OU=Test Dept, O=R3, L=London, C=GB",
-                                "Hello Bob"
+                                "Hello!"
                             )
                         )
                     )
