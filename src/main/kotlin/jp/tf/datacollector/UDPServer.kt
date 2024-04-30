@@ -2,6 +2,7 @@ package jp.tf.datacollector
 
 import aws.sdk.kotlin.services.s3.model.*
 import aws.smithy.kotlin.runtime.content.asByteStream
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.client.request.headers
 import io.ktor.client.statement.*
@@ -50,7 +51,7 @@ data class ChatDetails(
 val counterContext = newSingleThreadContext("CounterContext")
 
 fun main() = runBlocking<Unit> {
-    // create a S3 bucket
+    // create a S3 bucket every time the program starts
     awsS3Client {
         val request = CreateBucketRequest {
             bucket = s3BucketName
@@ -86,7 +87,8 @@ fun main() = runBlocking<Unit> {
                 println("Tag information is ${response.eTag}")
             }
 
-            // TODO extract status form response
+            var resp: ApiResponse? = null
+
             postClient {
                 val clientId = fileName
                 println("Post: $clientId")
@@ -108,14 +110,16 @@ fun main() = runBlocking<Unit> {
                     )
                 }
 
-                if (response.status.value in 200..299) {
-                    println("Success: ${response.bodyAsText()}")
+                if (response.status.value in 200..299) {  // actually 201 should be returned.
+                    resp = response.body<ApiResponse>()
+                    println("Success: $resp")
                 } else {
                     println("Failed with status code: ${response.status.value}")
                 }
             }
 
-            // TODO set tx_start and status correctly
+            // should i simply serialize resp and store it as a string?
+            // what if value is null? should i store it as "null"? will aws s3 tag accept null???
             awsS3Client {
                 val t = Tagging {
                     tagSet = listOf(
@@ -124,17 +128,21 @@ fun main() = runBlocking<Unit> {
                             value = fileName
                         },
                         Tag {
-                            key = "tx_start"
-                            value = "2024-05-28"
+                            key = "flowId"
+                            value = resp?.flowId
+                        },
+                        Tag {
+                            key = "txStartTime"
+                            value = resp?.timestamp
                         },
                         Tag {
                             key = "status"
-                            value = "COMPLETE"
+                            value = resp?.flowStatus ?: "failed"
                         }
                     )
                 }
 
-                println("update tag: $t")
+                println("updating a S3 tag: $t")
 
                 val putObjectTaggingRequest = PutObjectTaggingRequest {
                     bucket = s3BucketName
@@ -178,7 +186,7 @@ fun main() = runBlocking<Unit> {
                     }
 
                     // Write message to the log file
-                    // TODO: is this a buffere write like 4096 bytes at a time?
+                    // TODO: is this a buffer write like 4096 bytes at a time?
                     logFile.appendText("$udpPacket\n")
                 }
 
