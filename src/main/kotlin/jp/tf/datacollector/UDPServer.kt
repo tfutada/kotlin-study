@@ -27,11 +27,12 @@ const val HttpServer = "https://localhost:8888"
 val auth = System.getenv("AUTH")!!
 val hashId = System.getenv("HASH_ID")!!
 val flowName = System.getenv("FLOW_NAME")!!
+val bucketNamePrefix =
+    System.getenv("S3_BUCKET") ?: throw IllegalStateException("S3_BUCKET environment variable not set")
 
 val s3BucketName: String by lazy {
-    val bucketName = System.getenv("S3_BUCKET") ?: throw IllegalStateException("S3_BUCKET environment variable not set")
     val uuid = UUID.randomUUID().toString()
-    "$bucketName-$uuid"
+    "$bucketNamePrefix-$uuid"
 }
 
 @Serializable
@@ -51,6 +52,22 @@ data class ChatDetails(
 val counterContext = newSingleThreadContext("CounterContext")
 
 fun main() = runBlocking<Unit> {
+    // NB. can NOT delete buckets with objects in it.
+//    awsS3Client {
+//        val listBucketsResponse = listBuckets()
+//        listBucketsResponse.buckets?.forEach { bucket ->
+//            bucket.name?.let { bucketName ->
+//                if (bucketName.startsWith(bucketNamePrefix)) {
+//                    val deleteRequest = DeleteBucketRequest {
+//                        this.bucket = bucketName
+//                    }
+//                    deleteBucket(deleteRequest)
+//                    println("S3 Bucket deleted: $bucketName")
+//                }
+//            }
+//        }
+//    }
+
     // create a S3 bucket every time the program starts
     awsS3Client {
         val request = CreateBucketRequest {
@@ -82,9 +99,10 @@ fun main() = runBlocking<Unit> {
                     key = fileName
                     metadata = metadataVal
                     body = File("${LogDir}/${fileName}").asByteStream()
+                    checksumAlgorithm = (ChecksumAlgorithm.Sha256)
                 }
                 val response = putObject(request)
-                println("Tag information is ${response.eTag}")
+                println("Tag information is ${response.checksumSha256}")
             }
 
             var resp: ApiResponse? = null
