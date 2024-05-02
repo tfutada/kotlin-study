@@ -27,13 +27,13 @@ const val HttpServer = "https://localhost:8888"
 val auth = System.getenv("AUTH")!!
 val hashId = System.getenv("HASH_ID")!!
 val flowName = System.getenv("FLOW_NAME")!!
-val bucketNamePrefix =
+val s3BucketName =
     System.getenv("S3_BUCKET") ?: throw IllegalStateException("S3_BUCKET environment variable not set")
 
-val s3BucketName: String by lazy {
-    val uuid = UUID.randomUUID().toString()
-    "$bucketNamePrefix-$uuid"
-}
+//val s3BucketName: String by lazy {
+//    val uuid = UUID.randomUUID().toString()
+//    "$bucketNamePrefix-$uuid"
+//}
 
 @Serializable
 data class ChatRequest(
@@ -50,6 +50,13 @@ data class ChatDetails(
 )
 
 val counterContext = newSingleThreadContext("CounterContext")
+
+fun getHexFromBase64Sha256(base64Sha256: String?): String =
+    base64Sha256?.let {
+        Base64.getDecoder().decode(it)
+    }?.joinToString("") { byte ->
+        "%02x".format(byte)
+    } ?: throw IllegalStateException("SHA256 hash is null")
 
 fun main() = runBlocking<Unit> {
     // NB. can NOT delete buckets with objects in it.
@@ -93,6 +100,7 @@ fun main() = runBlocking<Unit> {
             val metadataVal = mutableMapOf<String, String>()
             metadataVal["clientId"] = fileName
 
+            var sha256Hash: String? = null
             awsS3Client {
                 val request = PutObjectRequest {
                     bucket = s3BucketName
@@ -102,14 +110,16 @@ fun main() = runBlocking<Unit> {
                     checksumAlgorithm = (ChecksumAlgorithm.Sha256)
                 }
                 val response = putObject(request)
-                println("Tag information is ${response.checksumSha256}")
+                sha256Hash = response.checksumSha256
+                println("SHA256 hash is $sha256Hash")
             }
 
             var resp: ApiResponse? = null
 
+            val clientId = getHexFromBase64Sha256(sha256Hash)
+            println("clientId : $clientId")
+
             postClient {
-                val clientId = fileName
-                println("Post: $clientId")
                 val response: HttpResponse = post("${HttpServer}/api/v1/flow/${hashId}") {
                     headers {
                         append(HttpHeaders.Authorization, "Basic $auth")
@@ -144,7 +154,7 @@ fun main() = runBlocking<Unit> {
                         tagSet = listOf(
                             Tag {
                                 key = "clientId"
-                                value = fileName
+                                value = clientId
                             },
                             Tag {
                                 key = "flowId"
