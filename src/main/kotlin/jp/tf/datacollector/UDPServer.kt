@@ -14,6 +14,9 @@ import kotlinx.coroutines.*
 import kotlinx.serialization.Serializable
 import java.io.File
 import java.nio.file.Paths
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
@@ -58,6 +61,20 @@ fun getHexFromBase64Sha256(base64Sha256: String?): String =
         "%02x".format(byte)
     } ?: throw IllegalStateException("SHA256 hash is null")
 
+fun generateKeyNameFromTimestamp(timestampMillis: Long): String {
+    // Create an Instant object from the timestamp
+    val instant = Instant.ofEpochMilli(timestampMillis)
+
+    // Convert Instant to ZonedDateTime, here using UTC, but you can adjust the zone as needed
+    val zonedDateTime = instant.atZone(ZoneId.of("UTC"))
+
+    // Create a formatter for the desired output
+    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd/HH/mm:ss.SSS")
+
+    // Format and print the date
+    return formatter.format(zonedDateTime)
+}
+
 fun main() = runBlocking<Unit> {
     // NB. can NOT delete buckets with objects in it.
 //    awsS3Client {
@@ -93,19 +110,17 @@ fun main() = runBlocking<Unit> {
     // Lambda Receiver - define an action when a new log file is created
     directoryWatcher.onCreate {
         val fileName = this.toString()
-        println("New file created: $fileName")
+        val s3KeyName = generateKeyNameFromTimestamp(System.currentTimeMillis())
+
+        println("S3 Key Name: $s3KeyName")
 
         // Upload the file to S3 and Http Post
         CoroutineScope(Dispatchers.IO).launch {
-            val metadataVal = mutableMapOf<String, String>()
-            metadataVal["clientId"] = fileName
-
             var sha256Hash: String? = null
             awsS3Client {
                 val request = PutObjectRequest {
                     bucket = s3BucketName
-                    key = fileName
-                    metadata = metadataVal
+                    key = s3KeyName
                     body = File("${LogDir}/${fileName}").asByteStream()
                     checksumAlgorithm = (ChecksumAlgorithm.Sha256)
                 }
@@ -175,7 +190,7 @@ fun main() = runBlocking<Unit> {
 
                 val putObjectTaggingRequest = PutObjectTaggingRequest {
                     bucket = s3BucketName
-                    key = fileName
+                    key = s3KeyName
                     tagging = t
                 }
 
