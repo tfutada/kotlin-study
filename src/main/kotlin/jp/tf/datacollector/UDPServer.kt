@@ -131,6 +131,7 @@ fun main() = runBlocking<Unit> {
 
             var resp: ApiResponse? = null
 
+            // NB. base64 may contain characters that are not allowed in clientId. ex.) "+", "/", "="
             val clientId = getHexFromBase64Sha256(sha256Hash)
             println("clientId : $clientId")
 
