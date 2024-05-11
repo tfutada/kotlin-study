@@ -26,6 +26,7 @@ suspend fun postClient(block: suspend HttpClient.() -> Unit) {
         engine {
             https {
                 trustManager = trust
+                serverName = null
             }
         }
         install(ContentNegotiation) {
