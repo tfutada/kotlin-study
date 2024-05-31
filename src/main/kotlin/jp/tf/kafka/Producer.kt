@@ -24,15 +24,16 @@ fun createProducer(): KafkaProducer<String, String> {
 
 fun main() {
     val producer = createProducer()
-    val topic = "simple-message-topic"
+    val topic = "simple-message-topic" // トピック
 
     try {
-        // Example of sending a simple message
-        val message = "Hello, Kafka!"
+        val message = "Hello, Kafka!" // メッセージ
         val record = ProducerRecord<String, String>(topic, message)
-        val metadata = producer.send(record).get()  // `get()` to ensure synchronous send
+        val metadata = producer.send(record).get()  // 送信する
 
-        println("Message sent to topic ${metadata.topic()} on partition ${metadata.partition()} at offset ${metadata.offset()}")
+        println("Message sent to topic ${metadata.topic()} on partition ${metadata.partition()} " +
+                "at offset ${metadata.offset()}")
+
     } catch (e: Exception) {
         println("Failed to send message: ${e.message}")
         e.printStackTrace()
