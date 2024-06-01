@@ -40,7 +40,7 @@ private fun createConsumer(): KafkaConsumer<String, String> {
 fun main() {
     val producer = createProducer()
     val topic = "simple-message-topic" // トピック
-    val numMessages = 10000 // Number of messages to send
+    val numMessages = 100000 // Number of messages to send
     val message = "Hello, Kafka!" // メッセージ
 
     runBlocking {
@@ -76,7 +76,7 @@ fun main() {
                     val records = consumer.poll(Duration.ofMillis(100))
                     for (record in records) {
                         consumedMessages++
-                        println("Received message: ${record.value()} from partition: ${record.partition()}, offset: ${record.offset()}")
+//                        println("Received message: ${record.value()} from partition: ${record.partition()}, offset: ${record.offset()}")
                     }
                 }
             } catch (e: Exception) {
