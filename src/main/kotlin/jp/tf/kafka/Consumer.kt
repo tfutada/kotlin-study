@@ -36,7 +36,7 @@ fun main() {
                 val dateTime = Instant.ofEpochMilli(timestamp)
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime()
-                val formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddTHH:mm:ss.SSS"))
+                val formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss.SSS"))
 
                 println(
                     "Consumed message: ${record.value()} from topic: ${record.topic()}," +
