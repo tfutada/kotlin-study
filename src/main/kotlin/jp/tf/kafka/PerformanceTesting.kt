@@ -39,8 +39,8 @@ private fun createConsumer(): KafkaConsumer<String, String> {
 
 fun main() {
     val producer = createProducer()
-    val topic = "simple-message-topic" // トピック
-    val numMessages = 100000 // Number of messages to send
+    val topic = "kfk-topic-3" // トピック
+    val numMessages = 100_000 // Number of messages to send
     val message = "Hello, Kafka!" // メッセージ
 
     runBlocking {
