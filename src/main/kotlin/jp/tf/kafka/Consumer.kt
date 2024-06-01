@@ -16,7 +16,7 @@ private fun createConsumer(): KafkaConsumer<String, String> {
         put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers)
         put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
         put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer::class.java.name)
-        put(ConsumerConfig.GROUP_ID_CONFIG, "simple-consumer-group3")
+        put(ConsumerConfig.GROUP_ID_CONFIG, "simple-consumer-group4")
         put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest")  // To start reading from the beginning of the topic
     }
     return KafkaConsumer(props)
@@ -36,7 +36,7 @@ fun main() {
                 val dateTime = Instant.ofEpochMilli(timestamp)
                     .atZone(ZoneId.systemDefault())
                     .toLocalDateTime()
-                val formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss.SSS"))
+                val formattedDateTime = dateTime.format(DateTimeFormatter.ofPattern("yyyyMMddTHH:mm:ss.SSS"))
 
                 println(
                     "Consumed message: ${record.value()} from topic: ${record.topic()}," +
