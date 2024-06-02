@@ -28,7 +28,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
     implementation("io.ktor:ktor-client-cio:$ktor_version")
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.2")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.1")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.2")
 
     testImplementation(kotlin("test"))
@@ -39,8 +39,4 @@ tasks.test {
 }
 kotlin {
     jvmToolchain(17)
-}
-
-application {
-    mainClass.set("jp.tf.datacollector.UDPServerKt")
 }
